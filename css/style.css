@@ -2,6 +2,7 @@
 @import url('variables.css');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+img { max-width: 100%; }
 html { scroll-behavior: smooth; }
 body { font-family: 'NexonMaplestory', sans-serif; background: var(--color-bg); color: var(--color-text); overflow-x: hidden; line-height: 1.6; }
 .container { max-width: var(--container-width); margin: 0 auto; padding: 0 var(--container-padding); }
@@ -109,7 +110,9 @@ section.alt-bg { background: var(--color-bg-light); }
 
 .ship-system { background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-secondary) 100%); background-image: url('../images/bg4_1.png'); background-size: cover; background-position: center; position: relative; }
 .ship-system .ship-grid { display: grid; grid-template-columns: 1fr; gap: var(--spacing-lg); margin-top: var(--section-gap); }
-.ship-preview { padding: var(--spacing-lg); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-xl); }
+.ship-preview { padding: var(--spacing-lg); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; gap: var(--spacing-xl); }
+.ship-banner { width: 100%; }
+.ship-banner img { display: block; width: 100%; height: auto; }
 .ship-image { width: 150px; height: 100px; background: rgba(255, 255, 255, 0.2); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 50px; flex-shrink: 0; }
 .ship-items { display: flex; gap: var(--spacing-md); flex-wrap: wrap; flex: 1; }
 .item-slot { width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: all var(--transition-normal); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -168,8 +171,23 @@ footer { background: var(--color-dark); border-top: 2px solid var(--color-primar
   .footer-bottom { flex-direction: column; gap: var(--spacing-md); text-align: center; }
 }
 
-.scroll-reveal { opacity: 0; transform: translateY(30px); }
-.scroll-reveal.active { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+/* 등장 애니메이션: JS가 준비됐을 때만 숨김 → JS 실패해도 콘텐츠는 항상 보임 */
+.js-ready .scroll-reveal,
+.js-ready .character-card,
+.js-ready .section-title,
+.js-ready .ship-preview {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+.js-ready .scroll-reveal.in-view,
+.js-ready .character-card.in-view,
+.js-ready .section-title.in-view,
+.js-ready .ship-preview.in-view {
+  opacity: 1;
+  transform: none;
+}
 .hidden { display: none; }
 
 @media (max-width: 768px) {

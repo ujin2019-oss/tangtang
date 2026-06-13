@@ -1,16 +1,19 @@
 gsap.registerPlugin(ScrollTrigger);
 
+// JS가 살아있음을 표시 → CSS의 등장 애니메이션(숨김 상태)이 이때만 적용됨
+document.documentElement.classList.add('js-ready');
+
 let currentSlide = 0;
 const slides = document.querySelectorAll('.system-slide');
 const totalSlides = slides.length;
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadHeader();
-  loadFooter();
   initScrollAnimations();
   initInteractions();
   initSystemSlider();
   initScrollTop();
+  // 헤더·푸터가 비동기로 끼어들며 레이아웃이 밀리므로, 로딩 완료 후 트리거 위치 재계산
+  Promise.all([loadHeader(), loadFooter()]).then(() => ScrollTrigger.refresh());
 });
 
 function initScrollTop() {
@@ -23,7 +26,7 @@ function initScrollTop() {
 }
 
 function loadHeader() {
-  fetch('includes/header.html')
+  return fetch('includes/header.html')
     .then(r => r.text())
     .then(data => {
       document.getElementById('header').innerHTML = data;
@@ -50,7 +53,7 @@ function initNavLinks() {
 }
 
 function loadFooter() {
-  fetch('includes/footer.html')
+  return fetch('includes/footer.html')
     .then(r => r.text())
     .then(data => { document.getElementById('footer').innerHTML = data; })
     .catch(e => console.error('푸터 로드 오류:', e));
@@ -71,93 +74,26 @@ function changeSlide(direction) {
 }
 
 function initScrollAnimations() {
-  gsap.to('.hero::before', {
-    y: 100,
-    scrollTrigger: {
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1
-    }
-  });
+  // 등장 애니메이션: IntersectionObserver로 안정적으로 처리.
+  // 화면에 들어오면 .in-view 클래스를 붙여 CSS 트랜지션으로 나타냄.
+  const revealEls = document.querySelectorAll('.scroll-reveal, .character-card, .section-title, .ship-preview');
 
-  const reveals = gsap.utils.toArray('.scroll-reveal');
-  reveals.forEach(reveal => {
-    gsap.fromTo(reveal,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: reveal,
-          start: 'top 80%',
-          toggleActions: 'play none none none'
-        }
+  // IntersectionObserver 미지원 환경이면 전부 즉시 표시
+  if (!('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('in-view'));
+    return;
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
       }
-    );
-  });
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -8% 0px' });
 
-  const cards = gsap.utils.toArray('.character-card');
-  cards.forEach((card, i) => {
-    gsap.fromTo(card,
-      { opacity: 0, y: 30, rotationZ: -3 },
-      {
-        opacity: 1,
-        y: 0,
-        rotationZ: 0,
-        duration: 0.6,
-        delay: i * 0.1,
-        ease: 'back.out',
-        scrollTrigger: {
-          trigger: '.character-grid',
-          start: 'top 80%',
-          toggleActions: 'play none none none'
-        }
-      }
-    );
-  });
-
-  gsap.utils.toArray('.section-title').forEach(title => {
-    gsap.fromTo(title,
-      { opacity: 0, x: -30 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.7,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: title,
-          start: 'top 85%',
-          toggleActions: 'play none none none'
-        }
-      }
-    );
-  });
-
-  gsap.fromTo('.ship-preview',
-    { opacity: 0, x: 300 },
-    {
-      opacity: 1,
-      x: 0,
-      duration: 1,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.ship-system',
-        start: 'top 80%',
-        toggleActions: 'play none none none'
-      }
-    }
-  );
-
-  // 리사이즈/이미지 로드 후 트리거 위치 재계산 (모바일 전환 시 내용 안 보이는 문제 방지)
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
-  });
-  window.addEventListener('load', () => ScrollTrigger.refresh());
+  revealEls.forEach(el => io.observe(el));
 }
 
 function initInteractions() {
