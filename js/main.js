@@ -19,10 +19,27 @@ document.addEventListener('DOMContentLoaded', () => {
 function initScrollTop() {
   const btn = document.getElementById('scrollTopBtn');
   if (!btn) return;
-  const toggle = () => btn.classList.toggle('show', window.pageYOffset > 300);
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  const show = (v) => btn.classList.toggle('show', v);
+
+  // 1) IntersectionObserver: 기기 에뮬레이션/터치 스크롤에서도 안정적으로 감지
+  //    문서 상단 300px 지점에 감지용 sentinel을 두고, 그 지점을 지나면 버튼 표시
+  if ('IntersectionObserver' in window) {
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sentinel.style.cssText = 'position:absolute;top:300px;left:0;width:1px;height:1px;pointer-events:none;';
+    document.body.appendChild(sentinel);
+    new IntersectionObserver(([e]) => show(!e.isIntersecting), { threshold: 0 }).observe(sentinel);
+  }
+
+  // 2) 스크롤 이벤트(보강/폴백): 여러 소스에서 스크롤 위치 읽기
+  const toggle = () => {
+    const y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    show(y > 300);
+  };
   toggle();
   window.addEventListener('scroll', toggle, { passive: true });
-  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
 function loadHeader() {

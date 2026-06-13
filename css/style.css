@@ -4,7 +4,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 img { max-width: 100%; }
 html { scroll-behavior: smooth; }
-body { font-family: 'NexonMaplestory', sans-serif; background: var(--color-bg); color: var(--color-text); overflow-x: hidden; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
+body { font-family: 'NexonMaplestory', sans-serif; background: var(--color-bg); color: var(--color-text); overflow-x: clip; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
 .container { max-width: var(--container-width); margin: 0 auto; padding: 0 var(--container-padding); }
 
 header { position: fixed; top: 0; left: 0; right: 0; height: 80px; background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--color-primary); display: flex; align-items: center; }
