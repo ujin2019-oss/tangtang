@@ -93,7 +93,7 @@ function initScrollAnimations() {
         scrollTrigger: {
           trigger: reveal,
           start: 'top 80%',
-          toggleActions: 'play none none reverse'
+          toggleActions: 'play none none none'
         }
       }
     );
@@ -113,7 +113,7 @@ function initScrollAnimations() {
         scrollTrigger: {
           trigger: '.character-grid',
           start: 'top 80%',
-          toggleActions: 'play none none reverse'
+          toggleActions: 'play none none none'
         }
       }
     );
@@ -130,7 +130,7 @@ function initScrollAnimations() {
         scrollTrigger: {
           trigger: title,
           start: 'top 85%',
-          toggleActions: 'play none none reverse'
+          toggleActions: 'play none none none'
         }
       }
     );
@@ -146,10 +146,18 @@ function initScrollAnimations() {
       scrollTrigger: {
         trigger: '.ship-system',
         start: 'top 80%',
-        toggleActions: 'play none none reverse'
+        toggleActions: 'play none none none'
       }
     }
   );
+
+  // 리사이즈/이미지 로드 후 트리거 위치 재계산 (모바일 전환 시 내용 안 보이는 문제 방지)
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+  });
+  window.addEventListener('load', () => ScrollTrigger.refresh());
 }
 
 function initInteractions() {
