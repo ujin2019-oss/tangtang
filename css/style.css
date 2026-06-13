@@ -4,7 +4,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 img { max-width: 100%; }
 html { scroll-behavior: smooth; }
-body { font-family: 'NexonMaplestory', sans-serif; background: var(--color-bg); color: var(--color-text); overflow-x: hidden; line-height: 1.6; }
+body { font-family: 'NexonMaplestory', sans-serif; background: var(--color-bg); color: var(--color-text); overflow-x: hidden; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
 .container { max-width: var(--container-width); margin: 0 auto; padding: 0 var(--container-padding); }
 
 header { position: fixed; top: 0; left: 0; right: 0; height: 80px; background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--color-primary); display: flex; align-items: center; }
@@ -125,7 +125,10 @@ section.alt-bg { background: var(--color-bg-light); }
   .system-slide.active { grid-template-columns: 1fr; gap: var(--spacing-lg); }
   .system-description { order: 2; }
   .system-image { order: 1; max-width: 320px; margin: 0 auto; }
-  .ship-preview { flex-direction: column; text-align: center; }
+  .ship-preview { flex-direction: column; text-align: center; padding: var(--spacing-sm); }
+  /* 가로로 긴 배너: 모바일에선 좌우가 잘리더라도 더 크게(높게) 표시 */
+  .ship-banner { width: 100%; overflow: hidden; display: flex; justify-content: center; border-radius: var(--radius-lg); }
+  .ship-banner img { width: auto; height: 140px; max-width: none; }
 }
 
 .download-section { background: linear-gradient(135deg, var(--color-dark-lighter) 0%, var(--color-dark) 100%); position: relative; overflow: hidden; }
@@ -189,6 +192,11 @@ footer { background: var(--color-dark); border-top: 2px solid var(--color-primar
   transform: none;
 }
 .hidden { display: none; }
+/* 데스크톱 전용 줄바꿈: 모바일에서는 자연스럽게 흐르도록 숨김 */
+@media (max-width: 768px) { .pc-br { display: none; } }
+/* 모바일 전용 줄바꿈: 데스크톱에서는 숨김 */
+.mo-br { display: none; }
+@media (max-width: 768px) { .mo-br { display: inline; } }
 
 @media (max-width: 768px) {
   .container { padding: 0 var(--container-padding-mobile); }
